@@ -1,0 +1,45 @@
+mishelle, jjgold
+
+EX: 3
+
+******
+FILES:
+******
+outputdevice.cpp
+Makefile
+README - this file
+
+********
+REMARKS:
+********
+We chose to add a few more helper methods:
+
+1. doWrite() - this is a start method for a thread, 
+   that performs the writing to file process.
+2. searchForLowestId() - finds the lowest free id
+
+This library is an output device that support a several threads 
+requests.
+The idea is to init the device and allow several threads to write to the 
+device. 
+
+initdevice() - The creates the working thread: this thread task is to 
+write to the file any task given by the user.
+It also creates the file "filename", and has to be called first.
+
+write2device() - This methods receives tasks (something to write to the file)
+from the user and the new task is entered to a queue of Tasks.
+The working thread (ccreated in the init method) writes the task to the 
+file. This method return a task id. 
+
+flush2device() - gets a task id and wait until it is written.
+
+closedevice() - close the output file and reset the system so that it is 
+possible to call initdevice again. After close device is called no new tasks
+are accepted.
+
+wait4close() - Wait for closedevice to finish. 
+ 
+
+
+

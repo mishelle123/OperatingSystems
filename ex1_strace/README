@@ -1,0 +1,111 @@
+mishelle, jjgold 
+
+EX: 1
+
+FILES:
+osm.c  -- the implementation of the given header file 
+Makefile
+README -- this file
+
+
+REMARKS:
+1. We added one more function that is not described in the header file:
+'foo'- an empty function, and we use this function in order to measure 
+	   the time takes for an empty function call. 
+2. In order to achieve better results we used loop unrolling.
+	   
+
+ANSWERS:
+
+*********
+task 1
+*********
+The program 'WhatIDo' when given one argument creates a directory called "os2014D",
+creates a file inside the directory called "os2014F", and writes inside the file a lot of 
+spaces, the username, new line charcter and the argument that was recived as an input. 
+We learned this from the following system calls: 
+
+1.mkdir("os2014D", 0775)                  = 0
+2.brk(0)                                  = 0x100a000
+3.brk(0x102b000)                          = 0x102b000
+4.open("os2014D/os2014F", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3
+5.fstat(3, {st_mode=S_IFREG|0644, st_size=0, ...}) = 0
+6.mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f495049e000
+7.write(3, "                                                    mishelle\nhello", 124) = 124
+8.close(3)                                = 0
+9.munmap(0x7f495049e000, 65536)           = 0
+10.unlink("os2014D/os2014F")               = 0
+11.rmdir("os2014D")                        = 0
+12.exit_group(0)                           = ?
+
+
+1. mkdir creates a new directory. "os2014D" is the name of the new directory and 0775 gives
+all permissions to owner and group and execute and read permission to everyone else.
+2. "brk(0)"  returns the current value.
+3. "brk(0x102b000)" sets the end of the data segment to the value specified by address,
+when  that  value  is reasonable, the system has enough memory, and the process does not 
+exceed its 
+maximum data size.
+4. open(const char *pathname, int flags, mode_t mode);
+The 'open' system call creates a new file "os2014F" inside the directory "os2014D" 
+that was opened before. 
+The flagss are: O_WRONLY - write only, O_CREAT - If the file does not exist it will be created,
+O_TRUNC- If the file already exists and is a regular file and the access mode allows writing it 
+will be truncated to length 0.
+Mode "0666" means that all users can read and write but do not execute.
+5. fstat(3, {st_mode=S_IFREG|0644, st_size=0, ...}) = 0
+checks the status of the file. 
+6. *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+mmap creates a new mapping in the virtual address space of the calling process.  
+The starting address for the new mapping is specified in address. 
+If address is NULL, then the kernel chooses the address at which to create the mapping. 
+The '65536' specifies the length of the mapping. The prot argument describes the desired 
+memory protection of the mapping:  
+'PROT_READ|PROT_WRITE', the flags are: MAP_PRIVATE -Create a private copy-on-write mapping, 
+MAP_ANONYMOUS - the mapping is not backed by any file, its contents are initialized to zero.
+7.The write arguments are : file descriptor '3', and the context to put in the file: A lot of
+spaces, 
+the username and in the next line: the argument inserted by the user. 
+8. closes a file descriptor, so that it no longer refers to any file and may be reused.
+9. The munmap system call deletes the mappings for the specified address range, and causes 
+further references to addresses within the range to generate invalid memory references.
+10.unlink deletes a name from the filesystem. If that name was the last link to a file and no 
+processes have the file open the file is deleted and the space it was using is made 
+available for reuse.
+11. removes the directory "os2014D"
+12. exit_group(0) terminates the process and all the process that connected to this process. 
+
+
+If the program run with no arguments or more than one argument an error will occurred
+and the program will print:
+"Only a single argument is supported
+ : Success"
+we learned this from the following system calls:
+1. dup(2) - which recives file descriptor in this case the file descriptor is 2 which means
+standard error.
+2. write(3, "Only a single argument is supported\n", 36Only a single argument is supported
+) which means that there is an invalid input.
+
+**********
+task 2
+**********
+In this task we were asked to implement several function described in osm.h:
+1. The functions: 'osm_function_time',  'osm_syscall_time' and 'osm_operation_time' are 
+   built in the same way: first they get the current time from the system, than runs the 
+   number of iterations asked by the user.
+   After that the function get the current time again and compute the average time needed 
+   to perform the operation.
+2. Another function is 'init' which is an initialization function that the user must call
+   before running any other library function. (the function gets the host name from 
+   the system)
+3. The last function is 'measureTimes'- it returns a timeMeasurmentStructure struct and 
+   initialize all its fields:
+   * machineName - the name of the host, 
+   * numberOfIterations,
+   * instructionTimeNanoSecond - the time takes to run a simple instruction
+   * functionTimeNanoSecond - the time takes to call an empty function
+   * trapTimeNanoSecond - the time takes to cahnge the os from user mode to kernel mode
+   * functionInstructionRatio = functionTime / instructionTime,
+   * trapInstructionRatio = trapTime / instructionTime 
+ 
+

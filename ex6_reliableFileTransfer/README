@@ -1,0 +1,65 @@
+mishelle, jjgold
+EX: 6
+
+******
+FILES:
+******
+srftp.cpp
+clftp.cpp
+performance.jpg
+Makefile
+README - this file
+
+
+********
+REMARKS:
+********
+client
+The client is the same as the example given by the course staff.
+  
+
+server
+The server open a socket according to the port that is given in the arguments.
+That it waits for clients to connect to the socket. 
+For each client a new socket is opened, and from this socket the data and the file will be transfer 
+according to the same protocol that the client use (size of file, size of name, file name, file content). 
+
+
+
+
+*****************
+THEORETICAL PART:
+*****************
+
+The main problems that arise while using the UDP protocol are:
+
+1. reliability- packets may get lost on there way
+2. duplication
+3. order- the packets may arrive in different order
+
+We are suggesting the following protocol:
+
+stage 1
+The sender will calculate the packet size and the number of packets which are needed in order
+to transfer the message, and will send them repeatedly to the receiver until a time out.
+The receiver now knows how many packets are expected. 
+
+stage 2
+The sender will send each packet a few times (constant number). Each packet will contain the packet 
+number, and this will ensure the right order. After that the sender will continue to the next packet.
+
+stage 3
+The receiver will end the communication when it has all the packets, and the sender will perform
+stages 1 and 2 repeatedly.
+
+This protocol solves the problems we described above:
+1. The sender send each packet a few times and has the potential of sending each packet as long as needed.
+   This will ensure that all the packets will arrive.
+2. The receiver know which packets he has, and ignores duplications.
+3. The receiver knows how many packets should arrive, and the sender mark each packet with its correct order.
+
+Running Time
+If the running time of the regular UDP protocol is n. Our protocol should run in O(kn), 
+while k is a constant so O(n).
+
+

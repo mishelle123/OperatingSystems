@@ -1,0 +1,50 @@
+mishelle, jjgold
+
+EX: 5
+
+******
+FILES:
+******
+MyCachingFileSystem.cpp
+Makefile
+README - this file
+
+
+********
+REMARKS:
+********
+In this exercises we were asked to work with fuse file system that has a cache memory.
+This means that some parts of the files are saved on the memory instead of the disk and this
+provides fast access to data.
+
+First we defined 'block' struct: the block saves the file data, size, and file name according 
+to the user arguments.
+Most of the fuse operations we implemented very similar to the suggested big brother implementation.
+Most of our attention has gone to the implementation of the caching_read function.
+  
+We chose to implement the cache by using two sets which contain the pointers of our data blocks.
+In the first set the blocks pointers are ordered by their last use time, and  in the other by their
+paths. This is in order to provide relatively fast access to a block when operating on the cache 
+memory according to the described algorithm (if the cache is full, we remove the block that was 
+least recently used).
+
+
+additional methods:
+1.  wrongUsage - this function is called when the usage is wrong. It prints the right way to 
+	use the program.
+2.  timeToString - convert time to the format that needed on the ioctloutpot.log file
+3. logError - Prints errors to the log file
+4. caching_fullpath - when given a relative path, it constructs the full path.
+
+*************** 
+O_DIRECT BONUS
+***************
+We chose to implement two different modes:
+1. When using the 'make' command the default compilation will be without the O_DIRECT
+   flag.
+2. When using the 'make directMode' command the O_DIRECT flag will be added to the compilation.
+	In O_DIRECT mode each file will be opened with the O_DIRECT flag. The block size that has 
+	been given by the user will be rounded up to a multiply of 512. In the 'read' function
+	memory will be allocated with 'posix_memalign'.
+
+

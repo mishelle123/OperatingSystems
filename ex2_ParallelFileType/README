@@ -1,0 +1,66 @@
+﻿mishelle, jjgold
+
+
+EX: 2
+
+******
+FILES:
+******
+pft.cpp
+Makefile
+compParaLevel.jpg
+README -- this file
+
+********
+REMARKS:
+********
+We chose to add a few more helper methods:
+
+1. findMaxfd - return the maximum fd in use
+2. strAppend -  returns string with all the names of the files
+3. initializeIndices - initialize the indices and decides how to allocate the files
+4. parseBuffer - perform the parsing of the buffer
+5. isFinished - return true iff all the processes are done
+
+	   
+********
+ANSWERS:
+********
+
+* The Algorithm Design:
+We choose to implement pft.cpp as described in the ex2 description.
+
+pft_init
+At first we create the given number (parallelism level) of child processes 
+such that each process is a file.
+Than we create pipes in order to communicate with the child processes.
+
+pft_find_types
+This method has to be called after 'pft_init" method.
+When calling this method all the child processes are already created and waiting
+for the input to process(a file name). We chose to send to each process a chunk
+with 50 file names. Than we read all the files and when the reading process
+is done we assign it another chunk of file names. 
+The result from this design is that all the processes are working in parallel
+each on its own chunk of files.
+
+Advantages:
+1. Improves the efficiently of file command  by using several cores simultaneously
+   instead of using only a single core.
+2. sending chunks increase the efficiency. That because “file” may have different 
+   processing time on different files. Therefore, if there is a chunk that takes a long
+   time, meanwhile the other processes may process several chunks.  
+
+Disadvantages
+1. For a small amount of files this may be an inefficient algorithm because
+   creating several processes is inefficient and one process is enough.
+2. We learned in 'Algorithm' course that this is an approximation algorithm 
+   so there may be a better algorithm to perform this task.
+   
+ 
+* Graph Results:
+As you can see in the attached graph the running time is decreasing as the
+parallelism level increasing. At first this significant decrease, and as the
+parallelism level growth the decreasing of run time is less significantly.
+We perform tests on parallelism level higher than 7 and found that the
+running time stays approximately the same with parallelism level higher than 12.
